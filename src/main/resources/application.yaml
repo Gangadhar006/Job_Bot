@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: bot
+  datasource:
+    url: jdbc:mysql://localhost:3306/naukri_bot?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: pass
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: false
+
+naukri:
+  credentials:
+    email: "puramgangadhar006@gmail.com"
+    password: "hello006."
+  browser:
+    headless: false
+    slowMo: 50   # ms delay between Playwright actions — helps avoid detection
+  session:
+    cookie-file: "session/naukri-cookies.json"
