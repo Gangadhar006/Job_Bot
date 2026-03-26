@@ -19,6 +19,31 @@ naukri:
     password: "hello006."
   browser:
     headless: false
-    slowMo: 50   # ms delay between Playwright actions — helps avoid detection
+    slowMo: 30   # ms delay between Playwright actions — helps avoid detection
   session:
     cookie-file: "session/naukri-cookies.json"
+  scraper:
+    keywords:
+      - "Java Developer"
+#      - "Spring Boot Developer"
+#      - "Backend Developer"
+#      - "Backend Engineer"
+#      - "Software Engineer"
+#      - "Microservices Developer"
+#      - "Full Stack Developer"
+#      - "Software Developer"
+#      - "Java Software Engineer"
+#      - "Java Backend Developer"
+#      - "Java Microservices Developer"
+#      - "Java Spring Developer"
+#      - "Java Spring Boot Developer"
+#      - "Java Software Developer"
+    locations:
+      - "Bangalore"
+#      - "Hybrid"
+#      - "Remote"
+    experience-min: 3           # years
+    experience-max: 5
+    pages-per-keyword: 1        # Naukri shows 20 jobs/page → 60 jobs per keyword
+    jd-fetch-delay-min: 2000    # ms between opening each JD tab
+    jd-fetch-delay-max: 1000

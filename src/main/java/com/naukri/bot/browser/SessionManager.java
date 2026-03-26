@@ -164,8 +164,9 @@ public class SessionManager {
         page.click("button[type='submit']");
 
         // Wait for navigation to complete
-        page.waitForURL("**naukri.com/**", new Page.WaitForURLOptions().setTimeout(15_000));
-        page.waitForLoadState(LoadState.NETWORKIDLE);
+        page.waitForURL("**/mnjuser/homepage**", new Page.WaitForURLOptions().setTimeout(15_000));
+
+                page.waitForLoadState(LoadState.NETWORKIDLE);
         randomDelay(2000, 3000);
 
         // Verify login success
