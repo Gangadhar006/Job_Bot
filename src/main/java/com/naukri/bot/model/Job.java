@@ -31,7 +31,9 @@ public class Job {
     private String jobUrl;
 
     private Double score;           // 0-100 match score
-    private String scoreBreakdown;  // JSON string with score details
+
+    @Column(name = "score_breakdown", columnDefinition = "TEXT")
+    private String scoreBreakdown;
 
     private String tailoredResumePath;  // Path to the generated PDF
 

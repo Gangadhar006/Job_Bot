@@ -13,7 +13,8 @@ public class NaukriConfig {
     private Credentials credentials = new Credentials();
     private Browser browser = new Browser();
     private Session session = new Session();
-    private Scraper scraper = new Scraper();   // ← NEW
+    private Scraper scraper = new Scraper();
+    private Scoring scoring = new Scoring();
 
     @Data
     public static class Credentials {
@@ -41,5 +42,23 @@ public class NaukriConfig {
         private int pagesPerKeyword;
         private int jdFetchDelayMin;
         private int jdFetchDelayMax;
+    }
+
+    @Data
+    public static class Scoring {
+        private double minScoreThreshold;
+        private Skills skills;
+        private int yourExperienceYears;
+        private List<String> preferredLocations;
+        private int minSalaryLpa;
+        private List<String> blacklistedCompanies;
+        private List<String> blacklistedTitleKeywords;
+
+        @Data
+        public static class Skills {
+            private List<String> primary;
+            private List<String> secondary;
+            private List<String> bonus;
+        }
     }
 }

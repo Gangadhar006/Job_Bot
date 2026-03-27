@@ -212,10 +212,6 @@ public class JobScraper {
 
         // ── Skills ────────────────────────────────────────────
         String skills = extractSkills(page);
-        log.info("*************************************************************************");
-        log.info("jdText: {}", jdText);
-        log.info("skills: {}", skills);
-        log.info("*************************************************************************");
 
         // ── Posted date ───────────────────────────────────────
         // (used for staleness checks later)

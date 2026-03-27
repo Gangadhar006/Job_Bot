@@ -25,25 +25,98 @@ naukri:
   scraper:
     keywords:
       - "Java Developer"
-#      - "Spring Boot Developer"
-#      - "Backend Developer"
-#      - "Backend Engineer"
-#      - "Software Engineer"
-#      - "Microservices Developer"
-#      - "Full Stack Developer"
-#      - "Software Developer"
-#      - "Java Software Engineer"
-#      - "Java Backend Developer"
-#      - "Java Microservices Developer"
-#      - "Java Spring Developer"
-#      - "Java Spring Boot Developer"
-#      - "Java Software Developer"
+    #      - "Spring Boot Developer"
+    #      - "Backend Developer"
+    #      - "Backend Engineer"
+    #      - "Software Engineer"
+    #      - "Microservices Developer"
+    #      - "Full Stack Developer"
+    #      - "Software Developer"
+    #      - "Java Software Engineer"
+    #      - "Java Backend Developer"
+    #      - "Java Microservices Developer"
+    #      - "Java Spring Developer"
+    #      - "Java Spring Boot Developer"
+    #      - "Java Software Developer"
     locations:
       - "Bangalore"
-#      - "Hybrid"
-#      - "Remote"
-    experience-min: 3           # years
+    #      - "Hybrid"
+    #      - "Remote"
+    experience-min: 2           # years
     experience-max: 5
-    pages-per-keyword: 1        # Naukri shows 20 jobs/page → 60 jobs per keyword
+    pages-per-keyword: 2        # Naukri shows 20 jobs/page → total jobs = keywords * locations * pages * 20
     jd-fetch-delay-min: 2000    # ms between opening each JD tab
     jd-fetch-delay-max: 1000
+
+  scoring:
+    min-score-threshold: 70       # jobs below this % are SKIPPED
+
+    # Your actual skills — scoring weights them by tier
+    skills:
+      primary: # high weight — must-have for you
+        - "Java"
+        - "Spring Boot"
+        - "Spring Framework"
+        - "REST API"
+        - "Microservices"
+        - "Hibernate"
+        - "JPA"
+        - "Maven"
+        - "Git"
+      secondary: # medium weight — good to have
+        - "Kafka"
+        - "Redis"
+        - "Docker"
+        - "Kubernetes"
+        - "AWS"
+        - "PostgreSQL"
+        - "MySQL"
+        - "JUnit"
+        - "Mockito"
+        - "CI/CD"
+        - "Jenkins"
+      bonus: # low weight — nice extras
+        - "GraphQL"
+        - "MongoDB"
+        - "Azure"
+        - "GCP"
+        - "Elasticsearch"
+        - "gRPC"
+
+    # Experience you have (for fit scoring)
+    your-experience-years: 3.5
+
+    # Preferred locations — exact matches score higher
+    preferred-locations:
+      #      - "Hyderabad"
+      - "Remote"
+      - "Hybrid"
+      - "Work From Home"
+
+    # Salary filter — skip roles below this (in LPA)
+    min-salary-lpa: 9
+
+    # Companies to never apply to
+    blacklisted-companies:
+      - "Maveric Systems Limited"
+      #      - "TCS"
+      #      - "Wipro"
+      - "Infosys"
+    #      - "HCL"
+    #      - "Cognizant"
+    #      - "Tech Mahindra"
+
+    # Title keywords that signal a bad fit — auto-skip
+    blacklisted-title-keywords:
+      - "PHP"
+      - "Python Developer"
+      - ".NET"
+      - "Angular"
+      - "React Developer"
+      - "iOS"
+      - "Android"
+      - "QA"
+      - "Tester"
+      - "SAP"
+      - "Salesforce"
+      - "Mainframe"
