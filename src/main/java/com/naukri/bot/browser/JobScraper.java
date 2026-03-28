@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.lang.model.util.Elements;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,7 @@ public class JobScraper {
                     List<Job> batch = scrapeKeywordLocation(session, keyword, location);
                     collected.addAll(batch);
                     log.info("📦 [{} @ {}] scraped {} jobs", keyword, location, batch.size());
-                    randomDelay(3000, 6000); // cooldown between keyword searches
+                    randomDelay(1000, 3000); // cooldown between keyword searches
                 } catch (Exception e) {
                     log.error("❌ Scrape failed [{} @ {}]: {}", keyword, location, e.getMessage());
                 }
@@ -62,7 +61,7 @@ public class JobScraper {
 
             page.navigate(url);
             page.waitForLoadState(LoadState.DOMCONTENTLOADED);
-            randomDelay(2000, 3500);
+            randomDelay(1000, 2000);
 
             scrollNaturally(page);
 
@@ -87,7 +86,7 @@ public class JobScraper {
                     log.warn("   ⚠️ JD fetch failed for [{}]: {}", card.title(), e.getMessage());
                 }
             }
-            randomDelay(2000, 4000); // between pages
+            randomDelay(1000, 2000); // between pages
         }
         return jobs;
     }
@@ -206,17 +205,9 @@ public class JobScraper {
         randomDelay(1500, 2500);
 
         scrollNaturally(page); // trigger lazy sections
-
-        // ── Job Description ───────────────────────────────────
         String jdText = extractJdText(page);
-
-        // ── Skills ────────────────────────────────────────────
         String skills = extractSkills(page);
 
-        // ── Posted date ───────────────────────────────────────
-        // (used for staleness checks later)
-
-        // Build Job entity
         Job job = new Job();
         job.setJobId(card.jobId());
         job.setTitle(card.title());

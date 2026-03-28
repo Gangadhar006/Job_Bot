@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: day6
   application:
     name: bot
   datasource:
@@ -13,18 +15,28 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
     show-sql: false
 
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-4o-mini
+          max-tokens: 1024
+          temperature: 0.3
+
 naukri:
   credentials:
-    email: "puramgangadhar006@gmail.com"
+    email: "puramgangadhar63@gmail.com"
     password: "hello006."
   browser:
     headless: false
-    slowMo: 30   # ms delay between Playwright actions — helps avoid detection
+    slowMo: 50   # ms delay between Playwright actions — helps avoid detection
   session:
     cookie-file: "session/naukri-cookies.json"
   scraper:
     keywords:
-      - "Java Developer"
+      - "devops engineer"
+    #      - "java developer"
     #      - "Spring Boot Developer"
     #      - "Backend Developer"
     #      - "Backend Engineer"
@@ -44,7 +56,7 @@ naukri:
     #      - "Remote"
     experience-min: 2           # years
     experience-max: 5
-    pages-per-keyword: 2        # Naukri shows 20 jobs/page → total jobs = keywords * locations * pages * 20
+    pages-per-keyword: 1        # Naukri shows 20 jobs/page → total jobs = keywords * locations * pages * 20
     jd-fetch-delay-min: 2000    # ms between opening each JD tab
     jd-fetch-delay-max: 1000
 
@@ -99,6 +111,7 @@ naukri:
     # Companies to never apply to
     blacklisted-companies:
       - "Maveric Systems Limited"
+      - "Accenture"
       #      - "TCS"
       #      - "Wipro"
       - "Infosys"
@@ -120,3 +133,24 @@ naukri:
       - "SAP"
       - "Salesforce"
       - "Mainframe"
+
+  apply:
+    resume-path: "resumes/Updated_Resume.pdf"
+    max-applications-per-session: 20
+    apply-delay-min: 3000   # ms delay between applications
+    apply-delay-max: 5000
+
+    #
+    profile:
+      total-experience-years: 3.5
+      current-ctc-lpa: 7.17
+      expected-ctc-lpa: 12
+      notice-period-days: 0
+      current-company: "Maveric Systems Limited"
+      current-designation: "Software Development Engineer"
+      hometown: "Bangalore"
+      willing-to-relocate: true
+      gender: "Male"
+      highest-qualification: "MCA"
+      passing-year: 2022
+      college: "Sri Venkateswara University"

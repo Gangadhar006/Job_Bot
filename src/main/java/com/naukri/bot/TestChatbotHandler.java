@@ -1,0 +1,220 @@
+package com.naukri.bot;
+
+import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.Page;
+import com.naukri.bot.ai.QuestionAnswerService;
+import com.naukri.bot.model.Job;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class TestChatbotHandler {
+
+    private final QuestionAnswerService qaService;
+
+    // 🔥 MAIN ENTRY
+    public void handleChatbot(Page page, Job job) {
+
+        int lastProcessed = 0;
+
+        while (true) {
+
+            Locator messages = page.locator("li.botItem.chatbot_ListItem span");
+            int currentCount = messages.count();
+
+            if (currentCount > lastProcessed) {
+
+                String question = messages.last().innerText().trim();
+                log.info("🧠 Question: {}", question);
+
+                boolean hasChips = page.locator(".chatbot_Chip").count() > 0;
+                boolean hasRadio = page.locator("input[type='radio']").count() > 0;
+                boolean hasTextBox = page.locator("[contenteditable='true']").count() > 0;
+
+                if (hasChips) {
+                    handleChips(page, question, job);
+
+                } else if (hasRadio) {
+                    handleRadio(page, question, job);
+
+                } else if (hasTextBox) {
+                    handleText(page, question, job);
+
+                } else {
+                    log.warn("⚠️ Unknown input type — skipping");
+                }
+
+                if (isCompleted(page)) {
+                    log.info("✅ Already applied (auto submit)");
+                    return;
+                }
+
+                clickSave(page);
+
+                lastProcessed = currentCount;
+            }
+
+            if (isCompleted(page)) {
+                log.info("✅ Chatbot completed");
+                break;
+            }
+
+            sleep(1000);
+        }
+    }
+
+    // =========================
+    // 🧩 CHIP HANDLER
+    // =========================
+    private void handleChips(Page page, String question, Job job) {
+
+        Locator chips = page.locator(".chatbot_Chip span");
+        int count = chips.count();
+
+        if (count == 0) return;
+
+        List<String> options = new ArrayList<>();
+
+        for (int i = 0; i < count; i++) {
+            options.add(chips.nth(i).innerText().trim());
+        }
+
+        log.info("🧩 Chips: {}", options);
+
+        // 🔥 Special case: resume upload
+        for (int i = 0; i < count; i++) {
+            String text = options.get(i).toLowerCase();
+
+            if (text.contains("upload resume")) {
+                chips.nth(i).click();
+                log.info("📎 Clicked Upload Resume");
+
+                handleResumeUpload(page);
+                return;
+            }
+        }
+
+        // 🔥 AI selection
+        String chosen = qaService.pickBestOption(question, options, job);
+
+        for (int i = 0; i < count; i++) {
+            if (options.get(i).equalsIgnoreCase(chosen)) {
+                chips.nth(i).click();
+                log.info("🧩 Selected: {}", chosen);
+                return;
+            }
+        }
+
+        // fallback
+        chips.first().click();
+        log.warn("⚠️ Fallback chip selected: {}", options.get(0));
+    }
+
+    // =========================
+    // 🔘 RADIO HANDLER
+    // =========================
+    private void handleRadio(Page page, String question, Job job) {
+
+        Locator options = page.locator("label.ssrc__label");
+        int count = options.count();
+
+        List<String> texts = new ArrayList<>();
+
+        for (int i = 0; i < count; i++) {
+            texts.add(options.nth(i).innerText().trim());
+        }
+
+        if (texts.isEmpty()) return;
+
+        String chosen = qaService.pickBestOption(question, texts, job);
+
+        for (int i = 0; i < count; i++) {
+            if (texts.get(i).equalsIgnoreCase(chosen)) {
+                options.nth(i).click();
+                log.info("🔘 Selected: {}", chosen);
+                return;
+            }
+        }
+
+        // fallback
+        options.first().click();
+        log.warn("⚠️ Fallback selected: {}", texts.get(0));
+    }
+
+    // =========================
+    // ✍️ TEXT HANDLER
+    // =========================
+    private void handleText(Page page, String question, Job job) {
+
+        Locator input = page.locator("[contenteditable='true']").first();
+
+        input.waitFor();
+        input.click();
+
+        String answer = qaService.answerFreeText(question, job);
+
+        for (char c : answer.toCharArray()) {
+            page.keyboard().type(String.valueOf(c));
+            sleep(40);
+        }
+
+        log.info("✍️ Typed: {}", answer);
+    }
+
+    // =========================
+    // 📎 RESUME UPLOAD
+    // =========================
+    private void handleResumeUpload(Page page) {
+        try {
+            Locator fileInput = page.locator("input[type='file']");
+
+            if (fileInput.count() > 0) {
+                fileInput.first().setInputFiles(Paths.get("C:/Users/puram/Desktop/Gangadhar_JP/test_doc.docx")); // 🔥 update path
+                log.info("📎 Resume uploaded");
+                sleep(2000);
+                page.waitForTimeout(2000);
+            }
+
+        } catch (Exception e) {
+            log.warn("⚠️ Resume upload skipped: {}", e.getMessage());
+        }
+    }
+
+    // =========================
+    // 💾 SAVE BUTTON
+    // =========================
+    private void clickSave(Page page) {
+
+        Locator saveBtn = page.locator("div.sendMsg");
+
+        page.waitForCondition(() ->
+                !saveBtn.getAttribute("class").contains("disabled")
+        );
+
+        saveBtn.click();
+        sleep(1000);
+    }
+
+    // =========================
+    // ✅ EXIT CONDITION
+    // =========================
+    private boolean isCompleted(Page page) {
+        return page.locator("text=Applied to").count() > 0
+                || page.locator("text=Application submitted").count() > 0
+                || page.locator("text=Successfully applied").count() > 0;
+    }
+
+    private void sleep(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException ignored) {
+        }
+    }
+}

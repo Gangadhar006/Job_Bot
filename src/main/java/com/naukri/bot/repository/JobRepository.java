@@ -22,4 +22,6 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     List<Job> findByStatusOrderByScoreDesc(ApplicationStatus status);
 
     long countByStatus(ApplicationStatus status);
+
+    List<Job> findByStatusAndExternalApplyUrlIsNotNull(ApplicationStatus status);
 }

@@ -2,11 +2,9 @@ package com.naukri.bot.browser;
 
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
-import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.Cookie;
 import com.microsoft.playwright.options.LoadState;
-import com.microsoft.playwright.options.WaitForSelectorState;
 import com.naukri.bot.config.NaukriConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -164,9 +162,9 @@ public class SessionManager {
         page.click("button[type='submit']");
 
         // Wait for navigation to complete
-        page.waitForURL("**/mnjuser/homepage**", new Page.WaitForURLOptions().setTimeout(15_000));
+        page.waitForURL("**/mnjuser/homepage**", new Page.WaitForURLOptions().setTimeout(45_000));
 
-                page.waitForLoadState(LoadState.NETWORKIDLE);
+        page.waitForLoadState(LoadState.NETWORKIDLE);
         randomDelay(2000, 3000);
 
         // Verify login success

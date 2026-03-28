@@ -25,6 +25,9 @@ public class Job {
     private String experienceRequired;
     private String salaryRange;
 
+    @Column(unique = true)
+    private String externalApplyUrl;
+
     @Column(columnDefinition = "TEXT")
     private String jobDescription;
 

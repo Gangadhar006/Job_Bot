@@ -15,6 +15,7 @@ public class NaukriConfig {
     private Session session = new Session();
     private Scraper scraper = new Scraper();
     private Scoring scoring = new Scoring();
+    private Apply apply = new Apply();
 
     @Data
     public static class Credentials {
@@ -25,7 +26,7 @@ public class NaukriConfig {
     @Data
     public static class Browser {
         private boolean headless = false;
-        private int slowMo = 50;
+        private int slowMo;
     }
 
     @Data
@@ -59,6 +60,31 @@ public class NaukriConfig {
             private List<String> primary;
             private List<String> secondary;
             private List<String> bonus;
+        }
+    }
+
+    @Data
+    public static class Apply {
+        private String resumePath;
+        private int maxApplicationsPerSession;
+        private int applyDelayMin;
+        private int applyDelayMax;
+        private Profile profile = new Profile();
+
+        @Data
+        public static class Profile {
+            private int totalExperienceYears;
+            private double currentCtcLpa;
+            private double expectedCtcLpa;
+            private int noticePeriodDays;
+            private String currentCompany;
+            private String currentDesignation;
+            private String hometown;
+            private boolean willingToRelocate;
+            private String gender;
+            private String highestQualification;
+            private int passingYear;
+            private String college;
         }
     }
 }

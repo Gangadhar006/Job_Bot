@@ -32,8 +32,16 @@ public class PlaywrightConfig {
                         "--disable-infobars",
                         "--disable-dev-shm-usage",
                         "--no-sandbox",
-                        "--start-maximized"
+                        "--start-maximized",
+                        "--my-bot-id=naukri-bot"
 //                        "--disable-setuid-sandbox"
+
+//                        "--disable-http2",
+//                        "--disable-features=IsolateOrigins,site-per-process",
+//                        "--disable-background-networking",
+//                        "--disable-background-timer-throttling",
+//                        "--disable-renderer-backgrounding",
+//                        "--disable-backgrounding-occluded-windows"
                 ));
         return playwright.chromium().launch(options);
     }
