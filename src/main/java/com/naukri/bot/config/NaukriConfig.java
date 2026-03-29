@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -49,7 +50,7 @@ public class NaukriConfig {
     public static class Scoring {
         private double minScoreThreshold;
         private Skills skills;
-        private int yourExperienceYears;
+        private float yourExperienceYears;
         private List<String> preferredLocations;
         private int minSalaryLpa;
         private List<String> blacklistedCompanies;
@@ -73,7 +74,7 @@ public class NaukriConfig {
 
         @Data
         public static class Profile {
-            private int totalExperienceYears;
+            private double totalExperienceYears;
             private double currentCtcLpa;
             private double expectedCtcLpa;
             private int noticePeriodDays;
@@ -84,6 +85,7 @@ public class NaukriConfig {
             private String gender;
             private String highestQualification;
             private int passingYear;
+            private LocalDate dateOfBirth;
             private String college;
         }
     }

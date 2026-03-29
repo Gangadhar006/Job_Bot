@@ -16,13 +16,14 @@ spring:
     show-sql: false
 
   ai:
-    openai:
-      api-key: ${OPENAI_API_KEY}
-      chat:
-        options:
-          model: gpt-4o-mini
-          max-tokens: 1024
-          temperature: 0.3
+    google:
+      genai:
+        api-key: AIzaSyC_dxzsiMJY1Nutwck_vbyFxDIHU56uwro
+        chat:
+          options:
+            model: gemini-2.5-flash
+            temperature: 0.3
+            max-tokens: 1024
 
 naukri:
   credentials:
@@ -30,18 +31,18 @@ naukri:
     password: "hello006."
   browser:
     headless: false
-    slowMo: 50   # ms delay between Playwright actions — helps avoid detection
+    slowMo: 30   # ms delay between Playwright actions — helps avoid detection
   session:
     cookie-file: "session/naukri-cookies.json"
   scraper:
     keywords:
-      - "devops engineer"
-    #      - "java developer"
-    #      - "Spring Boot Developer"
-    #      - "Backend Developer"
-    #      - "Backend Engineer"
-    #      - "Software Engineer"
-    #      - "Microservices Developer"
+      - "java developer"
+      #      - "java developer"
+      - "Spring Boot Developer"
+      #      - "Backend Developer"
+      #      - "Backend Engineer"
+      #      - "Software Engineer"
+      - "Microservices Developer"
     #      - "Full Stack Developer"
     #      - "Software Developer"
     #      - "Java Software Engineer"
@@ -56,7 +57,7 @@ naukri:
     #      - "Remote"
     experience-min: 2           # years
     experience-max: 5
-    pages-per-keyword: 1        # Naukri shows 20 jobs/page → total jobs = keywords * locations * pages * 20
+    pages-per-keyword: 2        # Naukri shows 20 jobs/page → total jobs = keywords * locations * pages * 20
     jd-fetch-delay-min: 2000    # ms between opening each JD tab
     jd-fetch-delay-max: 1000
 
@@ -144,11 +145,12 @@ naukri:
     profile:
       total-experience-years: 3.5
       current-ctc-lpa: 7.17
-      expected-ctc-lpa: 12
+      expected-ctc-lpa: 12.0
       notice-period-days: 0
+      date_of_birth: 2000-03-10
       current-company: "Maveric Systems Limited"
       current-designation: "Software Development Engineer"
-      hometown: "Bangalore"
+      hometown: "Bangalore/Bengalore/Bengaluru"
       willing-to-relocate: true
       gender: "Male"
       highest-qualification: "MCA"

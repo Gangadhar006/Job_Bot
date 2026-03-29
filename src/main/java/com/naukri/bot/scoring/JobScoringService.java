@@ -1,5 +1,6 @@
 package com.naukri.bot.scoring;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naukri.bot.config.NaukriConfig;
 import com.naukri.bot.model.Job;
 import com.naukri.bot.model.ScoreBreakdown;
@@ -7,7 +8,6 @@ import com.naukri.bot.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -205,7 +205,7 @@ public class JobScoringService {
      * - 2 years outside             → 40
      * - 3+ years outside            → 0
      */
-    private double scoreExperience(Job job, int yourExp) {
+    private double scoreExperience(Job job, float yourExp) {
 
         String expStr = normalise(job.getExperienceRequired());
         if (expStr == null || expStr.isBlank()) return 70.0; // unknown = neutral
@@ -213,17 +213,17 @@ public class JobScoringService {
         int[] range = parseExperienceRange(expStr);
         if (range == null) return 70.0;
 
-        int minExp = range[0];
-        int maxExp = range[1];
+        float minExp = range[0];
+        float maxExp = range[1];
 
         if (yourExp >= minExp && yourExp <= maxExp) return 100.0;
 
-        int gap = yourExp < minExp
+        float gap = yourExp < minExp
                 ? minExp - yourExp
                 : yourExp - maxExp;
 
-        if (gap == 1) return 70.0;
-        if (gap == 2) return 40.0;
+        if (gap <= 1.0) return 70.0;
+        if (gap >= 1 && gap <= 2.0 || gap > 2.0) return 40.0;
         return 0.0;
     }
 

@@ -2,12 +2,14 @@ package com.naukri.bot.service;
 
 import com.naukri.bot.model.Job;
 import com.naukri.bot.repository.JobRepository;
+import com.naukri.bot.util.ContactExtractor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -48,6 +50,8 @@ public class JobStorageService {
             try {
                 jobRepository.save(job);
                 saved.add(job);
+                extractAndSaveContacts(job);
+
                 log.info("💾 Saved: [{}] {} @ {}", job.getJobId(), job.getTitle(), job.getCompany());
             } catch (Exception e) {
                 log.error("❌ DB save failed for {}: {}", job.getTitle(), e.getMessage());
@@ -56,6 +60,36 @@ public class JobStorageService {
 
         log.info("📊 Batch done — saved: {}, skipped (dup/invalid): {}", saved.size(), skipped);
         return saved;
+    }
+
+    public void extractAndSaveContacts(Job job) {
+
+        if (job.getJobDescription() == null || job.getJobDescription().isBlank()) {
+            return;
+        }
+
+        Map<String, List<String>> contacts =
+                ContactExtractor.extractContacts(job.getJobDescription());
+
+        List<String> emails = contacts.get("emails");
+        List<String> phones = contacts.get("phones");
+
+        String emailStr = (emails == null || emails.isEmpty())
+                ? null
+                : String.join(",", emails);
+
+        String phoneStr = (phones == null || phones.isEmpty())
+                ? null
+                : String.join(",", phones);
+
+        if (emailStr != null && (job.getEmails() == null || job.getEmails().isBlank())) {
+            job.setEmails(emailStr);
+        }
+
+        if (phoneStr != null && (job.getPhones() == null || job.getPhones().isBlank())) {
+            job.setPhones(phoneStr);
+        }
+        jobRepository.save(job);
     }
 
     public long totalJobsInDb() {

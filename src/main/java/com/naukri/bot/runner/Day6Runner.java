@@ -48,12 +48,11 @@ public class Day6Runner implements CommandLineRunner {
 //            List<Job> scraped = jobScraper.scrapeAll(session);
 //            jobStorageService.saveNewJobs(scraped);
 //            log.info("🔍 Scraped: {}", scraped.size());
-//            BotProcessMonitor.printBotProcesses();
 
-            log.info("************************************************************************************************************************************************");
+//            log.info("************************************************************************************************************************************************");
             // ── 3. Score → queue ───────────────────────────────────
 //            jobScoringService.scoreAndQueueAll();
-            BotProcessMonitor.printBotProcesses();
+//            BotProcessMonitor.printBotProcesses();
 
             // ── 4. Load QUEUED jobs ordered by score ───────────────
 //            List<Job> queued = jobRepository
@@ -61,8 +60,9 @@ public class Day6Runner implements CommandLineRunner {
 
 //            List<Job> queued = jobRepository
 //                    .findByStatusAndExternalApplyUrlIsNotNull(Job.ApplicationStatus.FAILED);
-            List<Job> queued = jobRepository.findByStatus(Job.ApplicationStatus.FAILED);
+            List<Job> queued = jobRepository.findAll();
 
+//            startFromScratch(session);
 //            List<Job> queued = new ArrayList<>();
             log.info("📋 {} jobs queued for application", queued.size());
 
@@ -90,5 +90,18 @@ public class Day6Runner implements CommandLineRunner {
                 log.info("Browser closed.");
             }
         }
+    }
+
+    void startFromScratch(BrowserSession session) throws Exception {
+
+        // ── 2. Scrape ──────────────────────────────────────────
+        List<Job> scraped = jobScraper.scrapeAll(session);
+        jobStorageService.saveNewJobs(scraped);
+        log.info("🔍 Scraped: {}", scraped.size());
+
+//            log.info("************************************************************************************************************************************************");
+        // ── 3. Score → queue ───────────────────────────────────
+        jobScoringService.scoreAndQueueAll();
+        BotProcessMonitor.printBotProcesses();
     }
 }

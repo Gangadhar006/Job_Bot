@@ -27,12 +27,9 @@ public class BotProcessMonitor {
 
             while ((line = reader.readLine()) != null) {
                 if (line.contains("--my-bot-id=naukri-bot")) {
-                    log.info("🧠 BOT PROCESS: {}", line.trim());
                     count++;
                 }
             }
-
-            log.info("🔥 Total bot Chrome processes: {}", count);
 
         } catch (Exception e) {
             log.error("Error reading processes", e);

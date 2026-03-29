@@ -38,11 +38,21 @@ public class Job {
     @Column(name = "score_breakdown", columnDefinition = "TEXT")
     private String scoreBreakdown;
 
+    @Column(name = "qa_history", columnDefinition = "JSON")
+    private String qaHistory;
+
     private String tailoredResumePath;  // Path to the generated PDF
 
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status = ApplicationStatus.DISCOVERED;
 
+    @Column(columnDefinition = "TEXT")
+    private String emails;
+
+    @Column(columnDefinition = "TEXT")
+    private String phones;
+
+    @Column(columnDefinition = "TEXT")
     private String failureReason;       // If status = FAILED
 
     private LocalDateTime scrapedAt;

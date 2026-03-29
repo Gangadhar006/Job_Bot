@@ -58,7 +58,7 @@ public class JobApplier {
             } catch (Exception e) {
                 log.error("   ❌ Apply failed: {}", e.getMessage());
                 job.setStatus(Job.ApplicationStatus.FAILED);
-                job.setFailureReason(e.getMessage());
+                job.setFailureReason(String.format("Unexpected error: %s", e.getMessage().substring(100)));
             }
 
             jobRepository.save(job);
@@ -71,7 +71,6 @@ public class JobApplier {
     }
 
     private boolean applySingleJob(BrowserSession session, Job job) throws Exception {
-        log.info("**********************************************Monitor per job**********************************************");
         BotProcessMonitor.printBotProcesses();
         Page page = session.getPage();
 
@@ -101,7 +100,7 @@ public class JobApplier {
             log.info("No popup opened on apply click, continuing with the same page");
         }
 
-        randomDelay(2000, 3500);
+        randomDelay(1000, 2500);
 
         ApplyType applyType = detectApplyType(page, newPage, job);
         log.info("   📋 Apply type: {}", applyType);
@@ -160,7 +159,7 @@ public class JobApplier {
         return ApplyType.UNKNOWN;
     }
 
-    private boolean handleEasyApply(Page page, Job job){
+    private boolean handleEasyApply(Page page, Job job) {
 
         log.info("   ⚡ Handling Easy Apply...");
         chatbotHandler.handleChatbot(page, job);
@@ -271,8 +270,8 @@ public class JobApplier {
                 String labelLow = label.toLowerCase();
                 String answer;
 
-                if (matches(labelLow, "total experience", "years of experience", "experience in years")) {
-                    answer = qaService.getTotalExperience();
+                if (matches(labelLow, "total experience", "years of experience", "experience in years", "experience", "exp")) {
+                    answer = qaService.getTotalExperience() + " Years";
                 } else if (matches(labelLow, "current ctc", "current salary", "present ctc")) {
                     answer = qaService.getCurrentCtc();
                 } else if (matches(labelLow, "expected ctc", "expected salary", "ctc expectation")) {
@@ -441,6 +440,7 @@ public class JobApplier {
 
                 // AI decides
                 boolean shouldCheck = qaService.answerYesNo(label, job);
+
                 if (shouldCheck) {
                     checkbox.check();
                     log.info("   ☑ Checkbox '{}' → checked", truncate(label, 40));

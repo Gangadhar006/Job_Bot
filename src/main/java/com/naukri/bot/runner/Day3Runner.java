@@ -1,5 +1,6 @@
 package com.naukri.bot.runner;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naukri.bot.browser.BrowserSession;
 import com.naukri.bot.browser.JobScraper;
 import com.naukri.bot.browser.SessionManager;
@@ -13,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
