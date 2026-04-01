@@ -25,12 +25,13 @@ public class Job {
     private String experienceRequired;
     private String salaryRange;
 
-    @Column(unique = true)
+    @Column(unique = true, columnDefinition = "TEXT")
     private String externalApplyUrl;
 
     @Column(columnDefinition = "TEXT")
     private String jobDescription;
 
+    @Column(unique = true, columnDefinition = "TEXT")
     private String jobUrl;
 
     private Double score;           // 0-100 match score

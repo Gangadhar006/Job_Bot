@@ -28,6 +28,11 @@ spring:
             temperature: 0.3
             max-tokens: 1024
 
+telegram:
+  bot:
+    token: 8653807109:AAF1IX6KPHPbSYlBXd8NtvvgBx58EIMUoXg
+    chat-id: 714390827
+
 naukri:
   credentials:
     email: "puramgangadhar63@gmail.com"

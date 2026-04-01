@@ -3,6 +3,7 @@ package com.naukri.bot.repository;
 
 import com.naukri.bot.model.Job;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,4 +25,8 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     long countByStatus(ApplicationStatus status);
 
     List<Job> findByStatusAndExternalApplyUrlIsNotNull(ApplicationStatus status);
+
+    @Query("SELECT j FROM Job j WHERE j.externalApplyUrl IS NOT NULL AND j.externalApplyUrl <> ''")
+    List<Job> findValidExternalApplyLinks();
+
 }

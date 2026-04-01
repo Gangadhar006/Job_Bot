@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -64,23 +66,37 @@ public class JobStorageService {
 
     public void extractAndSaveContacts(Job job) {
 
-        if (job.getJobDescription() == null || job.getJobDescription().isBlank()) {
+        String jobDescription = Stream.of(
+                        job.getTitle(),
+                        job.getCompany(),
+                        job.getLocation(),
+                        job.getExperienceRequired(),
+                        job.getSalaryRange(),
+                        job.getJobDescription()
+                )
+                .filter(Objects::nonNull)
+                .collect(java.util.stream.Collectors.joining(" "));
+
+
+        log.info("job description: {}", jobDescription);
+
+        if (jobDescription == null || jobDescription.isBlank()) {
             return;
         }
 
         Map<String, List<String>> contacts =
-                ContactExtractor.extractContacts(job.getJobDescription());
+                ContactExtractor.extractContacts(jobDescription);
 
         List<String> emails = contacts.get("emails");
         List<String> phones = contacts.get("phones");
 
         String emailStr = (emails == null || emails.isEmpty())
                 ? null
-                : String.join(",", emails);
+                : String.join(", ", emails);
 
         String phoneStr = (phones == null || phones.isEmpty())
                 ? null
-                : String.join(",", phones);
+                : String.join(", ", phones);
 
         if (emailStr != null && (job.getEmails() == null || job.getEmails().isBlank())) {
             job.setEmails(emailStr);
