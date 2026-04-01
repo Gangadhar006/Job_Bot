@@ -16,12 +16,15 @@ spring:
     show-sql: false
 
   ai:
+    retry:
+      enabled: false
     google:
       genai:
         api-key: AIzaSyC_dxzsiMJY1Nutwck_vbyFxDIHU56uwro
         chat:
           options:
-            model: gemini-2.5-flash
+            model: gemini-2.5-flash-lite
+#            model: gemini-3.1-flash-lite
             temperature: 0.3
             max-tokens: 1024
 
@@ -36,9 +39,9 @@ naukri:
     cookie-file: "session/naukri-cookies.json"
   scraper:
     keywords:
-      - "java developer"
       #      - "java developer"
-      - "Spring Boot Developer"
+      #      - "java developer"
+      #      - "Spring Boot Developer"
       #      - "Backend Developer"
       #      - "Backend Engineer"
       #      - "Software Engineer"
@@ -57,7 +60,7 @@ naukri:
     #      - "Remote"
     experience-min: 2           # years
     experience-max: 5
-    pages-per-keyword: 2        # Naukri shows 20 jobs/page → total jobs = keywords * locations * pages * 20
+    pages-per-keyword: 1        # Naukri shows 20 jobs/page → total jobs = keywords * locations * pages * 20
     jd-fetch-delay-min: 2000    # ms between opening each JD tab
     jd-fetch-delay-max: 1000
 

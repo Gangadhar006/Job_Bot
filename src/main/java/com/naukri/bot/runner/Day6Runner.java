@@ -1,12 +1,10 @@
 package com.naukri.bot.runner;
 
-import com.microsoft.playwright.Browser;
 import com.naukri.bot.BotProcessMonitor;
 import com.naukri.bot.browser.*;
-import com.naukri.bot.config.NaukriConfig;
 import com.naukri.bot.model.Job;
 import com.naukri.bot.repository.JobRepository;
-import com.naukri.bot.scoring.JobScoringService;
+import com.naukri.bot.service.JobScoringService;
 import com.naukri.bot.service.JobStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +12,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -41,8 +38,8 @@ public class Day6Runner implements CommandLineRunner {
         BrowserSession session = null;
         try {
             // ── 1. Login ───────────────────────────────────────────
-            session = sessionManager.getOrCreateSession();
-            log.info("✅ Session ready");
+//            session = sessionManager.getOrCreateSession();
+//            log.info("✅ Session ready");
 
             // ── 2. Scrape ──────────────────────────────────────────
 //            List<Job> scraped = jobScraper.scrapeAll(session);
@@ -51,7 +48,7 @@ public class Day6Runner implements CommandLineRunner {
 
 //            log.info("************************************************************************************************************************************************");
             // ── 3. Score → queue ───────────────────────────────────
-//            jobScoringService.scoreAndQueueAll();
+            jobScoringService.scoreAndQueueAll();
 //            BotProcessMonitor.printBotProcesses();
 
             // ── 4. Load QUEUED jobs ordered by score ───────────────
@@ -90,18 +87,5 @@ public class Day6Runner implements CommandLineRunner {
                 log.info("Browser closed.");
             }
         }
-    }
-
-    void startFromScratch(BrowserSession session) throws Exception {
-
-        // ── 2. Scrape ──────────────────────────────────────────
-        List<Job> scraped = jobScraper.scrapeAll(session);
-        jobStorageService.saveNewJobs(scraped);
-        log.info("🔍 Scraped: {}", scraped.size());
-
-//            log.info("************************************************************************************************************************************************");
-        // ── 3. Score → queue ───────────────────────────────────
-        jobScoringService.scoreAndQueueAll();
-        BotProcessMonitor.printBotProcesses();
     }
 }

@@ -57,6 +57,9 @@ public class Job {
 
     private LocalDateTime scrapedAt;
     private LocalDateTime appliedAt;
+    private LocalDateTime postedDate;
+
+    private String category;
 
     @PrePersist
     protected void onCreate() {

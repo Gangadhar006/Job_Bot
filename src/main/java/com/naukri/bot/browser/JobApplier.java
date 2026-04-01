@@ -58,7 +58,7 @@ public class JobApplier {
             } catch (Exception e) {
                 log.error("   ❌ Apply failed: {}", e.getMessage());
                 job.setStatus(Job.ApplicationStatus.FAILED);
-                job.setFailureReason(String.format("Unexpected error: %s", e.getMessage().substring(100)));
+                job.setFailureReason(String.format("Unexpected error: %s", e.getMessage().substring(0, Math.min(100, e.getMessage().length()))));
             }
 
             jobRepository.save(job);

@@ -31,5 +31,7 @@ public class ScoreBreakdown {
     private String matchedPrimarySkills;
     private String matchedSecondarySkills;
     private String matchedBonusSkills;
-    private String skipReason;        // if verdict != QUEUED
+    private String skipReason;
+    private String category;
+    private String priority;
 }

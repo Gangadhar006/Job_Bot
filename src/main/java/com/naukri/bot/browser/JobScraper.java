@@ -207,6 +207,7 @@ public class JobScraper {
         scrollNaturally(page); // trigger lazy sections
         String jdText = extractJdText(page);
         String skills = extractSkills(page);
+        LocalDateTime postedDate = extractPostedDate(page);
 
         Job job = new Job();
         job.setJobId(card.jobId());
@@ -219,9 +220,63 @@ public class JobScraper {
         job.setJobDescription(jdText + (skills.isBlank() ? "" : "\n\nSkills: " + skills));
         job.setStatus(Job.ApplicationStatus.DISCOVERED);
         job.setScrapedAt(LocalDateTime.now());
+        job.setPostedDate(postedDate);
 
-        log.debug("   ✔ JD fetched: [{}] @ {}", card.title(), card.company());
+        log.debug("   ✔ JD fetched: [{}] @ {}", card.title( ), card.company());
         return job;
+    }
+
+    private LocalDateTime extractPostedDate(Page page) {
+        Locator posted = page.locator("span:has(label:text('Posted')) span");
+        String postedText = posted.first().innerText().trim();
+        return parsePostedDate(postedText);
+    }
+
+    public LocalDateTime parsePostedDate(String text) {
+
+        if (text == null || text.isBlank()) {
+            return null;
+        }
+
+        text = text.toLowerCase().trim();
+
+        LocalDateTime now = LocalDateTime.now();
+
+        try {
+            if (text.contains("just now")) {
+                return now;
+            }
+
+            if (text.contains("minute")) {
+                int minutes = extractNumber(text);
+                return now.minusMinutes(minutes);
+            }
+
+            if (text.contains("hour")) {
+                int hours = extractNumber(text);
+                return now.minusHours(hours);
+            }
+
+            if (text.contains("day")) {
+                int days = extractNumber(text);
+                return now.minusDays(days);
+            }
+
+            if (text.contains("week")) {
+                int weeks = extractNumber(text);
+                return now.minusWeeks(weeks);
+            }
+
+        } catch (Exception e) {
+            return null;
+        }
+
+        return null;
+    }
+
+    private int extractNumber(String text) {
+        String num = text.replaceAll("[^0-9]", "");
+        return num.isEmpty() ? 0 : Integer.parseInt(num);
     }
 
     /**

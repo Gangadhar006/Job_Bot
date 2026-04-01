@@ -7,7 +7,7 @@ import com.naukri.bot.browser.SessionManager;
 import com.naukri.bot.model.Job;
 import com.naukri.bot.model.ScoreBreakdown;
 import com.naukri.bot.repository.JobRepository;
-import com.naukri.bot.scoring.JobScoringService;
+import com.naukri.bot.service.JobScoringService;
 import com.naukri.bot.service.JobStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
