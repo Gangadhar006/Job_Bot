@@ -3,7 +3,7 @@ package com.naukri.bot;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.naukri.bot.ai.QuestionAnswerService;
-import com.naukri.bot.config.NaukriProperties;
+import com.naukri.bot.config.properties.NaukriProperties;
 import com.naukri.bot.model.Job;
 import com.naukri.bot.repository.JobRepository;
 import com.naukri.bot.util.QALogger;

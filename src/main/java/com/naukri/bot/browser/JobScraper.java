@@ -3,7 +3,7 @@ package com.naukri.bot.browser;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.LoadState;
-import com.naukri.bot.config.NaukriProperties;
+import com.naukri.bot.config.properties.NaukriProperties;
 import com.naukri.bot.model.Job;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

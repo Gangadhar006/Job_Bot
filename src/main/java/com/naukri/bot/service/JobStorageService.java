@@ -77,9 +77,6 @@ public class JobStorageService {
                 .filter(Objects::nonNull)
                 .collect(java.util.stream.Collectors.joining(" "));
 
-
-        log.info("job description: {}", jobDescription);
-
         if (jobDescription == null || jobDescription.isBlank()) {
             return;
         }

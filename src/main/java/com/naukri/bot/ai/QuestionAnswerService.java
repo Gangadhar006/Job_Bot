@@ -1,7 +1,7 @@
 package com.naukri.bot.ai;
 
 
-import com.naukri.bot.config.NaukriProperties;
+import com.naukri.bot.config.properties.NaukriProperties;
 import com.naukri.bot.model.Job;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -315,11 +315,11 @@ public class QuestionAnswerService {
         NaukriProperties.Apply.Profile p = config.getApply().getProfile();
 
         if (q.contains("total experience") || q.contains("total exp"))
-            return getTotalExperience() + "Years";
+            return getTotalExperience();
 
         if (q.contains("experience")) {
             String skill = extractSkill(question);
-            return getSkillExperience(skill) + " years";
+            return getSkillExperience(skill);
         }
 
         if (q.contains("notice")) return p.getNoticePeriodDays() + " days";

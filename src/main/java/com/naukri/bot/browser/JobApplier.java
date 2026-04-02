@@ -1,16 +1,15 @@
 package com.naukri.bot.browser;
 
-import com.microsoft.playwright.*;
+import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.LoadState;
-import com.naukri.bot.BotProcessMonitor;
 import com.naukri.bot.TestChatbotHandler;
 import com.naukri.bot.ai.QuestionAnswerService;
-import com.naukri.bot.config.NaukriProperties;
+import com.naukri.bot.config.properties.NaukriProperties;
 import com.naukri.bot.model.Job;
 import com.naukri.bot.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Paths;
@@ -96,7 +95,7 @@ public class JobApplier {
                     () -> humanClick(page, applyBtn)
             );
         } catch (Exception ex) {
-            log.info("No popup opened on apply click, continuing with the same page");
+            log.debug("No popup opened on apply click, continuing with the same page");
         }
 
         randomDelay(1000, 2500);
@@ -270,7 +269,7 @@ public class JobApplier {
                 String answer;
 
                 if (matches(labelLow, "total experience", "years of experience", "experience in years", "experience", "exp")) {
-                    answer = qaService.getTotalExperience() + " Years";
+                    answer = qaService.getTotalExperience();
                 } else if (matches(labelLow, "current ctc", "current salary", "present ctc")) {
                     answer = qaService.getCurrentCtc();
                 } else if (matches(labelLow, "expected ctc", "expected salary", "ctc expectation")) {

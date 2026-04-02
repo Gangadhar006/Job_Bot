@@ -1,6 +1,6 @@
 package com.naukri.bot.service;
 
-import com.naukri.bot.config.TelegramProperties;
+import com.naukri.bot.config.properties.TelegramProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.naukri.bot.ai;
 
-import com.naukri.bot.config.GeminiGenAiProperties;
+import com.naukri.bot.config.properties.GeminiGenAiProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;

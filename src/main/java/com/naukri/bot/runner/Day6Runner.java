@@ -44,56 +44,46 @@ public class Day6Runner implements CommandLineRunner {
         BrowserSession session = null;
         try {
             // ── 1. Login ───────────────────────────────────────────
-            session = sessionManager.getOrCreateSession();
-            log.info("✅ Session ready");
-
+//            session = sessionManager.getOrCreateSession();
+//            log.info("✅ Session ready");
 
             // ── 2. Scrape ──────────────────────────────────────────
-            List<Job> scraped = jobScraper.scrapeAll(session);
-            jobStorageService.saveNewJobs(scraped);
-            log.info("🔍 Scraped: {}", scraped.size());
-
-            // ── 3. Score → queue ───────────────────────────────────
-            for (Job job : scraped)
-                jobStorageService.extractAndSaveContacts(job);
+//            List<Job> scraped = jobScraper.scrapeAll(session);
+//            jobStorageService.saveNewJobs(scraped);
+//            log.info("🔍 Scraped: {}", scraped.size());
+//
             jobScoringService.scoreAndQueueAll();
 
-
-            // ── 4. Load QUEUED jobs ordered by score ───────────────
-            List<Job> queued = jobRepository
-                    .findByStatusOrderByScoreDesc(Job.ApplicationStatus.QUEUED);
-
-//            List<Job> queued = jobRepository
-//                    .findByStatusAndExternalApplyUrlIsNotNull(Job.ApplicationStatus.FAILED);
-
-            List<Job> jobs = jobRepository.findAll();
+//            List<Job> jobs = jobRepository.findByStatus(Job.ApplicationStatus.DISCOVERED);
             // ── 5. Apply ───────────────────────────────────────────
-            int applied = jobApplier.applyToAll(session, jobs);
+//            int applied = jobApplier.applyToAll(session, jobs);
 
 
-            sender.sendRecruiterInsights(jobRepository.findAll());
+//            sender.sendRecruiterInsights(jobRepository.findAll());
 
 
             // ── 6. Summary ─────────────────────────────────────────
-            log.info("");
-            log.info("════════════════════════════════════════════════════");
-            log.info("  DAY 6 SUMMARY");
-            log.info("  Scraped      : {}", scraped.size());
-            log.info("  Queued       : {}", queued.size());
-            log.info("  Applied      : {} ✅", applied);
-            log.info("  Failed       : {} ❌",
-                    jobStorageService.totalByStatus(Job.ApplicationStatus.FAILED));
-            log.info("  Needs Review : {} 👀",
-                    jobStorageService.totalByStatus(Job.ApplicationStatus.NEEDS_REVIEW));
-            log.info("  Total in DB  : {}", jobStorageService.totalJobsInDb());
-            log.info("════════════════════════════════════════════════════");
+//            log.info("");
+//            log.info("════════════════════════════════════════════════════");
+//            log.info("  DAY 6 SUMMARY");
+////            log.info("  Scraped      : {}", scraped.size());
+////            log.info("  Queued       : {}", queued.size());
+////            log.info("  Applied      : {} ✅", applied);
+//            log.info("  Failed       : {} ❌",
+//                    jobStorageService.totalByStatus(Job.ApplicationStatus.FAILED));
+//            log.info("  Needs Review : {} 👀",
+//                    jobStorageService.totalByStatus(Job.ApplicationStatus.NEEDS_REVIEW));
+//            log.info("  Total in DB  : {}", jobStorageService.totalJobsInDb());
+//            log.info("════════════════════════════════════════════════════");
 
         } finally {
-            if (session != null) {
-                BotProcessMonitor.killBotProcesses();
-                session.close();
-                log.info("Browser closed.");
-            }
+//            if (session != null) {
+//                BotProcessMonitor.killBotProcesses();
+//                session.close();
+//                log.info("Browser closed.");
+//            }
         }
     }
+    //TODO: handle dropdown in chatbot
+//    https://www.naukri.com/job-listings-data-engineer-us-mnc-analytics-aspyra-hr-services-pune-gurugram-bengaluru-2-to-5-years-020426017309
 }

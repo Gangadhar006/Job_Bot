@@ -1,7 +1,7 @@
 package com.naukri.bot.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.naukri.bot.config.NaukriProperties;
+import com.naukri.bot.config.properties.NaukriProperties;
 import com.naukri.bot.model.Job;
 import com.naukri.bot.model.ScoreBreakdown;
 import com.naukri.bot.repository.JobRepository;
@@ -14,6 +14,8 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 @Service
@@ -37,11 +39,7 @@ public class JobScoringService {
     @Transactional
     public List<Job> scoreAndQueueAll() {
 
-        List<Job> test = jobRepository.findByStatus(Job.ApplicationStatus.SKIPPED);
-        List<Job> failed = jobRepository.findByStatus(Job.ApplicationStatus.FAILED);
-        List<Job> applied = jobRepository.findByStatus(Job.ApplicationStatus.APPLIED);
-
-        List<Job> discovered = Stream.of(test, failed, applied).flatMap(List::stream).toList();
+        List<Job> discovered = jobRepository.findAll();
 
         log.info("📋 Scoring {} DISCOVERED jobs...", discovered.size());
 
@@ -80,7 +78,7 @@ public class JobScoringService {
         return queued;
     }
 
-    public ScoreBreakdown score(Job job) {
+    private ScoreBreakdown score(Job job) {
         String jd = normalise(job.getJobDescription());
         String title = normalise(job.getTitle());
 
@@ -114,6 +112,12 @@ public class JobScoringService {
                 .locationScore(locationScore)
                 .titleScore(titleScore)
                 .salaryScore(salaryScore)
+                .skillWeight(W_SKILL)
+                .experienceWeight(W_EXPERIENCE)
+                .locationWeight(W_LOCATION)
+                .salaryWeight(W_SALARY)
+                .titleWeight(W_TITLE)
+                .skipReason(buildSkipReason(skillResult, expScore, locationScore, titleScore, salaryScore))
                 .matchedPrimarySkills(skillResult.primary)
                 .matchedSecondarySkills(skillResult.secondary)
                 .matchedBonusSkills(skillResult.bonus)
@@ -195,15 +199,20 @@ public class JobScoringService {
         return 0;
     }
 
+
     private int[] parseExperience(String exp) {
         try {
-            String cleaned = exp.replaceAll("[^0-9\\-]", " ");
-            String[] parts = cleaned.trim().split("\\s+");
+            String cleaned = exp.replaceAll("[^0-9\\-]", "");
+            String[] parts = cleaned.split("-");
 
-            if (parts.length >= 2) {
-                return new int[]{Integer.parseInt(parts[0]), Integer.parseInt(parts[1])};
+            if (parts.length == 2) {
+                return new int[]{
+                        Integer.parseInt(parts[0]),
+                        Integer.parseInt(parts[1])
+                };
             }
-        } catch (Exception ignored) {
+        } catch (Exception ex) {
+            log.info("exception occurred while scoring experience: {}", ex.getMessage());
         }
         return null;
     }
@@ -225,27 +234,40 @@ public class JobScoringService {
     }
 
     private double scoreTitle(String title) {
+        if (title == null) return 0;
 
-        if (title.contains("senior")) return 50;
-        if (title.contains("lead")) return 20;
+        title = title.toLowerCase();
+        double score = 0;
 
-        if (title.contains("java") || title.contains("backend")) return 100;
+        if (title.contains("java")) score += 50;
+        if (title.contains("backend")) score += 40;
 
-        return 50;
+        if (title.contains("senior")) score -= 20;
+        if (title.contains("lead")) score -= 40;
+
+        return score;
     }
 
     private double scoreSalary(Job job) {
-
-        String salary = normalise(job.getSalaryRange());
+        String salary = normalise(job.getSalaryRange()).toLowerCase();
 
         if (salary.contains("not disclosed")) return 50;
 
         try {
-            double val = Double.parseDouble(salary.replaceAll("[^0-9]", ""));
-            return val >= config.getScoring().getMinSalaryLpa() ? 100 : 20;
-        } catch (Exception e) {
-            return 50;
+            Matcher matcher = Pattern.compile("(\\d+)\\s*(?:-|\\s)\\s*(\\d+)").matcher(salary);
+            if (matcher.find()) {
+                double min = Double.parseDouble(matcher.group(1));
+                double max = Double.parseDouble(matcher.group(2));
+
+                double avg = (min + max) / 2.0;
+
+                return avg >= config.getApply().getProfile().getExpectedCtcLpa() ? 100 : 20;
+            }
+
+        } catch (Exception ex) {
+            log.warn("exception occurred while scoring salary: {}", ex.getMessage());
         }
+        return 50;
     }
 
     private void applyBreakdownToJob(Job job, ScoreBreakdown breakdown) {

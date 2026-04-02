@@ -1,6 +1,6 @@
 package com.naukri.bot.message;
 
-import com.naukri.bot.config.NaukriProperties;
+import com.naukri.bot.config.properties.NaukriProperties;
 import com.naukri.bot.model.Job;
 import com.naukri.bot.service.TelegramService;
 import lombok.RequiredArgsConstructor;

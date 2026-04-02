@@ -20,7 +20,7 @@ spring:
       enabled: false
     google:
       genai:
-        api-key: ${GOOGLE_API_KEY}
+        api-key: ${GEMINI_API_KEY}
         chat:
           options:
             model: gemini-2.5-flash-lite
@@ -43,13 +43,13 @@ naukri:
     cookie-file: "session/naukri-cookies.json"
   scraper:
     keywords:
-      #      - "java developer"
-      #      - "java developer"
-      #      - "Spring Boot Developer"
-      #      - "Backend Developer"
-      #      - "Backend Engineer"
-      #      - "Software Engineer"
-      - "Data Engineer"
+      - "java developer"
+    #      - "java developer"
+    #      - "Spring Boot Developer"
+    #      - "Backend Developer"
+    #      - "Backend Engineer"
+    #      - "Software Engineer"
+    #      - "Data Engineer"
     #      - "Full Stack Developer"
     #      - "Software Developer"
     #      - "Java Software Engineer"
@@ -62,7 +62,7 @@ naukri:
       - "Bengaluru"
     #      - "Hybrid"
     #      - "Remote"
-    experience-min: 2           # years
+    experience-min: 3           # years
     experience-max: 5
     naukri-city-id:
       - "97"                    # 97 is the id for bengaluru location in search url
@@ -112,10 +112,12 @@ naukri:
 
     # Preferred locations — exact matches score higher
     preferred-locations:
-      #      - "Hyderabad"
+      - "Bengaluru"
+      - "Bangalore"
       - "Remote"
       - "Hybrid"
       - "Work From Home"
+      - "wfh"
 
     # Salary filter — skip roles below this (in LPA)
     min-salary-lpa: 9
@@ -149,8 +151,8 @@ naukri:
   apply:
     resume-path: "resumes/Updated_Resume.pdf"
     max-applications-per-session: 20
-    apply-delay-min: 3000   # ms delay between applications
-    apply-delay-max: 5000
+    apply-delay-min: 1000   # ms delay between applications
+    apply-delay-max: 1500
 
     #
     profile:
@@ -166,4 +168,4 @@ naukri:
       gender: "Male"
       highest-qualification: "MCA"
       passing-year: 2022
-      college: "Sri Venkateswara University"
+      college: "Sri Padmavathi College of Computer Sciences and Technology"

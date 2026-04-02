@@ -1,4 +1,4 @@
-package com.naukri.bot.config;
+package com.naukri.bot.config.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
