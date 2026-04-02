@@ -3,7 +3,7 @@ package com.naukri.bot.browser;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.LoadState;
-import com.naukri.bot.config.NaukriConfig;
+import com.naukri.bot.config.NaukriProperties;
 import com.naukri.bot.model.Job;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,12 +13,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class JobScraper {
-    private final NaukriConfig config;
+    private final NaukriProperties config;
     private final Random random;
 
     /**
@@ -32,7 +33,10 @@ public class JobScraper {
         for (String keyword : config.getScraper().getKeywords()) {
             for (String location : config.getScraper().getLocations()) {
                 try {
-                    List<Job> batch = scrapeKeywordLocation(session, keyword, location);
+                    int freshness = config.getScraper().getJobFreshness();
+                    int experience = config.getScraper().getExperienceMin();
+                    List<Integer> cityList = config.getScraper().getNaukriCityId();
+                    List<Job> batch = scrapeKeywordLocation(session, keyword, location, experience, freshness, cityList);
                     collected.addAll(batch);
                     log.info("📦 [{} @ {}] scraped {} jobs", keyword, location, batch.size());
                     randomDelay(1000, 3000); // cooldown between keyword searches
@@ -50,12 +54,12 @@ public class JobScraper {
      * For each listing card found, fetches the full JD and constructs Job objects.
      * Implements natural delays and scrolling to mimic human behavior.
      */
-    private List<Job> scrapeKeywordLocation(BrowserSession session, String keyword, String location) throws Exception {
+    private List<Job> scrapeKeywordLocation(BrowserSession session, String keyword, String location, int experience, int freshness, List<Integer> naukriCityId) throws Exception {
         List<Job> jobs = new ArrayList<>();
         Page page = session.getPage();
 
         for (int pageNum = 1; pageNum <= config.getScraper().getPagesPerKeyword(); pageNum++) {
-            String url = buildSearchUrl(keyword, location, pageNum);
+            String url = buildSearchUrl(keyword, location, pageNum, experience, freshness, naukriCityId);
             log.info("🔍 Scraping page {} → {}", pageNum, url);
 
 
@@ -66,7 +70,10 @@ public class JobScraper {
             scrollNaturally(page);
 
             List<JobCard> cards = extractListingCards(page);
+            cards.stream().forEach(job -> log.info("jobs found: {}", job));
+
             log.info("   Found {} cards on page {}", cards.size(), pageNum);
+
 
             if (cards.isEmpty()) {
                 log.info("   No more results — stopping pagination for this keyword");
@@ -97,28 +104,61 @@ public class JobScraper {
      * - Handles "remote" location as a special case.
      * - Appends experience and job age filters as query parameters.
      */
-    private String buildSearchUrl(String keyword, String location, int page) {
+//    private String buildSearchUrl(String keyword, String location, int page) {
+//
+////        https://www.naukri.com/data-engineer-jobs-in-bengaluru-7?cityTypeGid=97&jobAge=1&experience=3
+//
+//        String keywordSlug = keyword.toLowerCase().replace(" ", "-");
+//        String locationSlug = location.equalsIgnoreCase("remote")
+//                ? "work-from-home"
+//                : location.toLowerCase().replace(" ", "-");
+////
+//        String base = String.format(
+//                "https://www.naukri.com/%s-jobs-in-%s",
+//                keywordSlug, locationSlug
+//        );
+//
+//        log.info("   Constructed search URL: {}", base + String.format(
+//                "?experience=%d&pageNo=%d&jobAge=7",
+//                config.getScraper().getExperienceMin(), page
+//        ));
+//
+//        return base + String.format(
+//                "?experience=%d&pageNo=%d&jobAge=7",
+//                config.getScraper().getExperienceMin(), page
+//        );
+//    }
+    public String buildSearchUrl(String role, String location, int page, int experience, int freshness, List<Integer> naukriCityId) {
+//        NAUKRI URL FORMAT
+//        https://www.naukri.com/data-engineer-jobs-in-bengaluru-7?cityTypeGid=97&jobAge=1&experience=3
+        String base = "https://www.naukri.com";
 
-        // Naukri URL format:
-        // https://www.naukri.com/java-developer-jobs-in-hyderabad?experience=2&pageNo=1
-        String keywordSlug = keyword.toLowerCase().replace(" ", "-");
-        String locationSlug = location.equalsIgnoreCase("remote")
-                ? "work-from-home"
-                : location.toLowerCase().replace(" ", "-");
+        String roleSlug = role.trim().toLowerCase().replace(" ", "-");
 
-        String base = String.format(
-                "https://www.naukri.com/%s-jobs-in-%s",
-                keywordSlug, locationSlug
-        );
+        String locationSlug = location.trim().toLowerCase().replace(" ", "-");
 
-        log.info("   Constructed search URL: {}", base + String.format(
-                "?experience=%d&pageNo=%d&jobAge=7",
-                config.getScraper().getExperienceMin(), page
+        String path = (page == 1)
+                ? String.format("%s/%s-jobs-in-%s", base, roleSlug, locationSlug)
+                : String.format("%s/%s-jobs-in-%s-%d", base, roleSlug, locationSlug, page);
+
+        String naukriCitySlug = naukriCityId.stream()
+                .map(cityId -> "cityTypeGid=" + cityId)
+                .collect(Collectors.joining("&"));
+
+        log.info("new url: {}", String.format(
+                "%s?experience=%d&jobAge=%d&%s",
+                path,
+                experience,
+                freshness,
+                naukriCitySlug
         ));
 
-        return base + String.format(
-                "?experience=%d&pageNo=%d&jobAge=7",
-                config.getScraper().getExperienceMin(), page
+        return String.format(
+                "%s?experience=%d&jobAge=%d&%s",
+                path,
+                experience,
+                freshness,
+                naukriCitySlug
         );
     }
 
@@ -222,7 +262,7 @@ public class JobScraper {
         job.setScrapedAt(LocalDateTime.now());
         job.setPostedDate(postedDate);
 
-        log.debug("   ✔ JD fetched: [{}] @ {}", card.title( ), card.company());
+        log.debug("   ✔ JD fetched: [{}] @ {}", card.title(), card.company());
         return job;
     }
 

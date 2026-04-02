@@ -3,7 +3,7 @@ package com.naukri.bot;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.naukri.bot.ai.QuestionAnswerService;
-import com.naukri.bot.config.NaukriConfig;
+import com.naukri.bot.config.NaukriProperties;
 import com.naukri.bot.model.Job;
 import com.naukri.bot.repository.JobRepository;
 import com.naukri.bot.util.QALogger;
@@ -24,7 +24,7 @@ public class TestChatbotHandler {
     private final QuestionAnswerService qaService;
     private final JobRepository jobRepository;
     private final QALogger qaLogger;
-    private final NaukriConfig config;
+    private final NaukriProperties config;
 
     // 🔥 MAIN ENTRY
     public void handleChatbot(Page page, Job job) {

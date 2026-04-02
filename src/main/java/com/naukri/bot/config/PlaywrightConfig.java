@@ -14,7 +14,7 @@ import java.util.Arrays;
 @Configuration
 @RequiredArgsConstructor
 public class PlaywrightConfig {
-    private final NaukriConfig config;
+    private final NaukriProperties config;
 
     @Bean(destroyMethod = "close")
     public Playwright playwright() {

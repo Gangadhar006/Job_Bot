@@ -7,7 +7,7 @@ import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.Cookie;
 import com.microsoft.playwright.options.LoadState;
-import com.naukri.bot.config.NaukriConfig;
+import com.naukri.bot.config.NaukriProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,10 +25,9 @@ import java.util.List;
 public class SessionManager {
     private static final String NAUKRI_HOME = "https://www.naukri.com/";
     private static final String NAUKRI_LOGIN = "https://www.naukri.com/nlogin/login";
-    private static final String LOGIN_SUCCESS_INDICATOR = "naukri.com/mnjuser/homepage";
 
     private final Browser browser;
-    private final NaukriConfig config;
+    private final NaukriProperties config;
     private final ObjectMapper mapper;
 
     /**

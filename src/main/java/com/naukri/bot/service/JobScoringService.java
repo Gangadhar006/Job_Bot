@@ -1,7 +1,7 @@
 package com.naukri.bot.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.naukri.bot.config.NaukriConfig;
+import com.naukri.bot.config.NaukriProperties;
 import com.naukri.bot.model.Job;
 import com.naukri.bot.model.ScoreBreakdown;
 import com.naukri.bot.repository.JobRepository;
@@ -29,7 +29,7 @@ public class JobScoringService {
     private static final double W_SALARY = 0.05;
     private static final double W_RECENCY = 0.10;
 
-    private final NaukriConfig config;
+    private final NaukriProperties config;
     private final JobRepository jobRepository;
     private final ObjectMapper mapper;
     private final JobClassifierService classifier;

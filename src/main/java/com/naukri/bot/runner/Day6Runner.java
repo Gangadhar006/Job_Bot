@@ -1,10 +1,10 @@
 package com.naukri.bot.runner;
 
 import com.naukri.bot.BotProcessMonitor;
-import com.naukri.bot.browser.*;
-import com.naukri.bot.message.ExternalApplyLinkSender;
-import com.naukri.bot.message.JobInsightSender;
-import com.naukri.bot.message.JobStatsSender;
+import com.naukri.bot.browser.BrowserSession;
+import com.naukri.bot.browser.JobApplier;
+import com.naukri.bot.browser.JobScraper;
+import com.naukri.bot.browser.SessionManager;
 import com.naukri.bot.message.RecruiterInsightSender;
 import com.naukri.bot.model.Job;
 import com.naukri.bot.repository.JobRepository;
@@ -17,7 +17,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -32,7 +31,6 @@ public class Day6Runner implements CommandLineRunner {
     private final JobScoringService jobScoringService;
     private final JobApplier jobApplier;
     private final JobRepository jobRepository;
-    private final TelegramService telegramService;
     private final RecruiterInsightSender sender;
 
 
@@ -46,29 +44,31 @@ public class Day6Runner implements CommandLineRunner {
         BrowserSession session = null;
         try {
             // ── 1. Login ───────────────────────────────────────────
-//            session = sessionManager.getOrCreateSession();
-//            log.info("✅ Session ready");
+            session = sessionManager.getOrCreateSession();
+            log.info("✅ Session ready");
+
 
             // ── 2. Scrape ──────────────────────────────────────────
-//            List<Job> scraped = jobScraper.scrapeAll(session);
-//            jobStorageService.saveNewJobs(scraped);
-//            log.info("🔍 Scraped: {}", scraped.size());
+            List<Job> scraped = jobScraper.scrapeAll(session);
+            jobStorageService.saveNewJobs(scraped);
+            log.info("🔍 Scraped: {}", scraped.size());
 
             // ── 3. Score → queue ───────────────────────────────────
-//            jobStorageService.extractAndSaveContacts();
-//            jobScoringService.scoreAndQueueAll();
-//            BotProcessMonitor.printBotProcesses();
+            for (Job job : scraped)
+                jobStorageService.extractAndSaveContacts(job);
+            jobScoringService.scoreAndQueueAll();
 
 
             // ── 4. Load QUEUED jobs ordered by score ───────────────
-//            List<Job> queued = jobRepository
-//                    .findByStatusOrderByScoreDesc(Job.ApplicationStatus.QUEUED);
+            List<Job> queued = jobRepository
+                    .findByStatusOrderByScoreDesc(Job.ApplicationStatus.QUEUED);
 
 //            List<Job> queued = jobRepository
 //                    .findByStatusAndExternalApplyUrlIsNotNull(Job.ApplicationStatus.FAILED);
 
+            List<Job> jobs = jobRepository.findAll();
             // ── 5. Apply ───────────────────────────────────────────
-//            int applied = jobApplier.applyToAll(session, queued);
+            int applied = jobApplier.applyToAll(session, jobs);
 
 
             sender.sendRecruiterInsights(jobRepository.findAll());
@@ -78,9 +78,9 @@ public class Day6Runner implements CommandLineRunner {
             log.info("");
             log.info("════════════════════════════════════════════════════");
             log.info("  DAY 6 SUMMARY");
-//            log.info("  Scraped      : {}", scraped.size());
-//            log.info("  Queued       : {}", queued.size());
-//            log.info("  Applied      : {} ✅", applied);
+            log.info("  Scraped      : {}", scraped.size());
+            log.info("  Queued       : {}", queued.size());
+            log.info("  Applied      : {} ✅", applied);
             log.info("  Failed       : {} ❌",
                     jobStorageService.totalByStatus(Job.ApplicationStatus.FAILED));
             log.info("  Needs Review : {} 👀",

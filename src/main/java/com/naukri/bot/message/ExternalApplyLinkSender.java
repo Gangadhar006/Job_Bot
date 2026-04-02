@@ -1,6 +1,6 @@
 package com.naukri.bot.message;
 
-import com.naukri.bot.config.NaukriConfig;
+import com.naukri.bot.config.NaukriProperties;
 import com.naukri.bot.model.Job;
 import com.naukri.bot.service.TelegramService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import java.util.List;
 public class ExternalApplyLinkSender {
     private final TelegramService telegramService;
     private StringBuilder sb = new StringBuilder("");
-    private final NaukriConfig config;
+    private final NaukriProperties config;
 
     public void sendExternalApplyLinks(List<Job> jobs) {
 

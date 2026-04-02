@@ -5,7 +5,7 @@ import com.microsoft.playwright.options.LoadState;
 import com.naukri.bot.BotProcessMonitor;
 import com.naukri.bot.TestChatbotHandler;
 import com.naukri.bot.ai.QuestionAnswerService;
-import com.naukri.bot.config.NaukriConfig;
+import com.naukri.bot.config.NaukriProperties;
 import com.naukri.bot.model.Job;
 import com.naukri.bot.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import java.util.Random;
 public class JobApplier {
 
     private final QuestionAnswerService qaService;
-    private final NaukriConfig config;
+    private final NaukriProperties config;
     private final JobRepository jobRepository;
     private final Random random;
     private final TestChatbotHandler chatbotHandler;
@@ -71,7 +71,6 @@ public class JobApplier {
     }
 
     private boolean applySingleJob(BrowserSession session, Job job) throws Exception {
-        BotProcessMonitor.printBotProcesses();
         Page page = session.getPage();
 
         page.navigate(job.getJobUrl());

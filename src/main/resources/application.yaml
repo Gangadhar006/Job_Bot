@@ -20,23 +20,22 @@ spring:
       enabled: false
     google:
       genai:
-        api-key: AIzaSyC_dxzsiMJY1Nutwck_vbyFxDIHU56uwro
+        api-key: ${GOOGLE_API_KEY}
         chat:
           options:
             model: gemini-2.5-flash-lite
-#            model: gemini-3.1-flash-lite
             temperature: 0.3
             max-tokens: 1024
 
 telegram:
   bot:
-    token: 8653807109:AAF1IX6KPHPbSYlBXd8NtvvgBx58EIMUoXg
-    chat-id: 714390827
+    token: ${TELEGRAM_TOKEN}
+    chat-id: ${TELEGRAM_CHAT_ID}
 
 naukri:
   credentials:
-    email: "puramgangadhar63@gmail.com"
-    password: "hello006."
+    email: ${NAUKRI_EMAIL}
+    password: ${NAUKRI_PASSWORD}
   browser:
     headless: false
     slowMo: 30   # ms delay between Playwright actions — helps avoid detection
@@ -50,7 +49,7 @@ naukri:
       #      - "Backend Developer"
       #      - "Backend Engineer"
       #      - "Software Engineer"
-      - "Microservices Developer"
+      - "Data Engineer"
     #      - "Full Stack Developer"
     #      - "Software Developer"
     #      - "Java Software Engineer"
@@ -60,12 +59,16 @@ naukri:
     #      - "Java Spring Boot Developer"
     #      - "Java Software Developer"
     locations:
-      - "Bangalore"
+      - "Bengaluru"
     #      - "Hybrid"
     #      - "Remote"
     experience-min: 2           # years
     experience-max: 5
-    pages-per-keyword: 1        # Naukri shows 20 jobs/page → total jobs = keywords * locations * pages * 20
+    naukri-city-id:
+      - "97"                    # 97 is the id for bengaluru location in search url
+
+    job-freshness: 1            # list all jobs posted 1 day ago
+    pages-per-keyword: 2        # Naukri shows 20 jobs/page → total jobs = keywords * locations * pages * 20
     jd-fetch-delay-min: 2000    # ms between opening each JD tab
     jd-fetch-delay-max: 1000
 

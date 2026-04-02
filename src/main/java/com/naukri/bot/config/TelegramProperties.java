@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "telegram.bot")
 @Data
 @Component
-public class TelegramConfig {
+public class TelegramProperties {
     private String token;
     private String chatId;
 }

@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @Component
 @ConfigurationProperties(prefix = "naukri")
-public class NaukriConfig {
+public class NaukriProperties {
     private Credentials credentials = new Credentials();
     private Browser browser = new Browser();
     private Session session = new Session();
@@ -44,6 +44,9 @@ public class NaukriConfig {
         private int pagesPerKeyword;
         private int jdFetchDelayMin;
         private int jdFetchDelayMax;
+        private List<Integer> naukriCityId;
+        private int jobFreshness;
+
     }
 
     @Data

@@ -1,22 +1,12 @@
 package com.naukri.bot.ai;
 
 
-import com.naukri.bot.NaukriBotApplication;
-import com.naukri.bot.config.NaukriConfig;
+import com.naukri.bot.config.NaukriProperties;
 import com.naukri.bot.model.Job;
-import com.naukri.bot.util.QALogger;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.messages.SystemMessage;
-import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.SpringApplication;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +24,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class QuestionAnswerService {
 
-    private final ChatClient chatClient;
-    private final NaukriConfig config;
+    private final NaukriProperties config;
+    private final RateLimitFailoverAiModel aiModel;
 
 
     /**
@@ -44,9 +34,7 @@ public class QuestionAnswerService {
      * answer based on keywords in the question. Always logs the Q&A for transparency.
      */
     public String answerFreeText(String question, Job job) {
-        log.info("service- QAService");
         String fallback = fallbackFreeText(question);
-        log.info("fallback-response: {}", fallback);
         if (fallback != null) {
             log.info("⚡ Using fallback answer: {}", fallback);
             return fallback;
@@ -56,10 +44,7 @@ public class QuestionAnswerService {
             String prompt = buildSystemPrompt() + "\n\n" +
                     buildFreeTextPrompt(question, job);
 
-            String answer = chatClient.prompt()
-                    .user(prompt)
-                    .call()
-                    .content();
+            String answer = aiModel.callWithFallback(prompt);
 
             log.info("   💬 Q: {} → A: {}...", truncate(question, 60), truncate(answer, 60));
 
@@ -89,10 +74,7 @@ public class QuestionAnswerService {
                     "\n\nIMPORTANT: Reply with ONLY ONE option EXACTLY as given. " +
                     "Do not explain. Do not rephrase.";
 
-            String answer = chatClient.prompt()
-                    .user(prompt)
-                    .call()
-                    .content();
+            String answer = aiModel.callWithFallback(prompt);
 
             if (answer == null || answer.isBlank()) {
                 return options.get(0);
@@ -141,10 +123,7 @@ public class QuestionAnswerService {
                     buildFreeTextPrompt(question, job) +
                     "\n\nIMPORTANT: Reply with ONLY 'yes' or 'no'. No explanation.";
 
-            String answer = chatClient.prompt()
-                    .user(prompt)
-                    .call()
-                    .content();
+            String answer = aiModel.callWithFallback(prompt);
 
             if (answer == null || answer.isBlank()) {
                 return true; // fallback safe
@@ -176,8 +155,8 @@ public class QuestionAnswerService {
      * applications. The prompt emphasizes professionalism, conciseness, and honesty.
      */
     private String buildSystemPrompt() {
-        NaukriConfig.Apply.Profile p = config.getApply().getProfile();
-        NaukriConfig.Scoring s = config.getScoring();
+        NaukriProperties.Apply.Profile p = config.getApply().getProfile();
+        NaukriProperties.Scoring s = config.getScoring();
 
         return """
                 You are filling out a job application on behalf of a software engineer.
@@ -296,10 +275,7 @@ public class QuestionAnswerService {
                     "\n\nIMPORTANT: You can select MULTIPLE options. " +
                     "Reply with comma-separated exact option texts. No explanation.";
 
-            String answer = chatClient.prompt()
-                    .user(prompt)
-                    .call()
-                    .content();
+            String answer = aiModel.callWithFallback(prompt);
 
             if (answer == null || answer.isBlank()) {
                 return List.of(options.get(0));
@@ -336,7 +312,7 @@ public class QuestionAnswerService {
      */
     private String fallbackFreeText(String question) {
         String q = question.toLowerCase();
-        NaukriConfig.Apply.Profile p = config.getApply().getProfile();
+        NaukriProperties.Apply.Profile p = config.getApply().getProfile();
 
         if (q.contains("total experience") || q.contains("total exp"))
             return getTotalExperience() + "Years";
@@ -437,8 +413,8 @@ public class QuestionAnswerService {
     }
 
     private String getSkillExperience(String skill) {
-        NaukriConfig.Apply.Profile p = config.getApply().getProfile();
-        NaukriConfig.Scoring.Skills s = config.getScoring().getSkills();
+        NaukriProperties.Apply.Profile p = config.getApply().getProfile();
+        NaukriProperties.Scoring.Skills s = config.getScoring().getSkills();
 
         if (s.getPrimary().stream().anyMatch(sk -> sk.equalsIgnoreCase(skill))) {
             return p.getTotalExperienceYears() + " years";

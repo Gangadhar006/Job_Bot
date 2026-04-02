@@ -1,6 +1,6 @@
 package com.naukri.bot.service;
 
-import com.naukri.bot.config.TelegramConfig;
+import com.naukri.bot.config.TelegramProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class TelegramService {
-    private final TelegramConfig config;
+    private final TelegramProperties config;
     private final RestTemplate restTemplate;
 
     public void send(String msg) {
